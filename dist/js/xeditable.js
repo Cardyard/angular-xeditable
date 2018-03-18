@@ -342,7 +342,7 @@ angular.module('xeditable').directive('editableCheckbox', ['editableDirectiveFac
       inputTpl: '<input type="checkbox">',
       render: function() {
         this.parent.render.call(this);
-        this.inputEl.wrap('<label></label>');
+        this.inputEl.wrap('<i></i><label></label>');
         
         if (this.attrs.eTitle) {
           this.inputEl.parent().append('<span>' + this.attrs.eTitle + '</span>');
