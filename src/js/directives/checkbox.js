@@ -9,7 +9,7 @@ angular.module('xeditable').directive('editableCheckbox', ['editableDirectiveFac
         this.inputEl.wrap('<label></label>');
         
         if (this.attrs.eTitle) {
-          this.inputEl.parent().append('<span>' + this.attrs.eTitle + '</span>');
+          this.inputEl.parent().append('<i></i><span>' + this.attrs.eTitle + '</span>');
        }
       },
       autosubmit: function() {
