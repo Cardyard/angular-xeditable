@@ -1,7 +1,7 @@
 /*!
 angular-xeditable - 0.8.1
 Edit-in-place for angular.js
-Build date: 2017-11-14 
+Build date: 2018-03-18 
 */
 /**
  * Angular-xeditable module 
@@ -159,8 +159,8 @@ angular.module('xeditable').directive('editableBsdate', ['editableDirectiveFacto
     function(editableDirectiveFactory, $injector, $parse) {
 
         // Constants from Angular-ui bootstrap datepicker
-        uibDatepickerConfig = $injector.get('uibDatepickerConfig');
-        uibDatepickerPopupConfig = $injector.get('uibDatepickerPopupConfig');
+        var uibDatepickerConfig = $injector.get('uibDatepickerConfig');
+        var uibDatepickerPopupConfig = $injector.get('uibDatepickerPopupConfig');
 
         var popupAttrNames = [
             ['eIsOpen', 'is-open'],
@@ -342,10 +342,10 @@ angular.module('xeditable').directive('editableCheckbox', ['editableDirectiveFac
       inputTpl: '<input type="checkbox">',
       render: function() {
         this.parent.render.call(this);
-        this.inputEl.wrap('<i></i><label></label>');
+        this.inputEl.wrap('<label></label>');
         
         if (this.attrs.eTitle) {
-          this.inputEl.parent().append('<span>' + this.attrs.eTitle + '</span>');
+          this.inputEl.parent().append('<i></i><span>' + this.attrs.eTitle + '</span>');
        }
       },
       autosubmit: function() {
@@ -425,9 +425,8 @@ angular.module('xeditable').directive('editableCombodate', ['editableDirectiveFa
 
         var combodate = editableCombodate.getInstance(this.inputEl, options);
         combodate.$widget.find('select').bind('change', function(e) {
-          //.replace is so this works in Safari
           self.scope.$data = combodate.getValue() ?
-              (new Date(combodate.getValue().replace(/-/g, "/"))).toISOString() : null;
+              moment(combodate.getValue(), combodate.options.format).toDate().toISOString() : null;
         }).change();
       }
     });
@@ -448,7 +447,7 @@ Input types: text|password|email|tel|number|url|search|color|date|datetime|datet
   var types = 'text|password|email|tel|number|url|search|color|date|datetime|datetime-local|time|month|week|file'.split('|');
 
   //todo: datalist
-  
+
   // generate directives
   angular.forEach(types, function(type) {
     var directiveName = camelCase('editable' + '-' + type);
@@ -460,34 +459,37 @@ Input types: text|password|email|tel|number|url|search|color|date|datetime|datet
           render: function() {
             this.parent.render.call(this);
 
+            var attrs = this.attrs;
+            var scope = this.scope;
+
             //Add bootstrap simple input groups
-            if (this.attrs.eInputgroupleft || this.attrs.eInputgroupright) {
+            if (attrs.eInputgroupleft || attrs.eInputgroupright) {
               this.inputEl.wrap('<div class="input-group"></div>');
 
-              if (this.attrs.eInputgroupleft) {
-                var inputGroupLeft = angular.element('<span class="input-group-addon">' + this.attrs.eInputgroupleft + '</span>');
+              if (attrs.eInputgroupleft) {
+                var inputGroupLeft = angular.element('<span class="input-group-addon" data-ng-bind="' + attrs.eInputgroupleft + '"></span>');
                 this.inputEl.parent().prepend(inputGroupLeft);
               }
 
-              if (this.attrs.eInputgroupright) {
-                var inputGroupRight = angular.element('<span class="input-group-addon">' + this.attrs.eInputgroupright + '</span>');
+              if (attrs.eInputgroupright) {
+                var inputGroupRight = angular.element('<span class="input-group-addon" data-ng-bind="' + attrs.eInputgroupright + '"></span>');
                 this.inputEl.parent().append(inputGroupRight);
               }
             }
 
             // Add label to the input
-            if (this.attrs.eLabel) {
-              var label = angular.element('<label>' + this.attrs.eLabel + '</label>');
-              if (this.attrs.eInputgroupleft || this.attrs.eInputgroupright) {
+            if (attrs.eLabel) {
+              var label = angular.element('<label>' + attrs.eLabel + '</label>');
+              if (attrs.eInputgroupleft || attrs.eInputgroupright) {
                 this.inputEl.parent().parent().prepend(label);
               } else {
                 this.inputEl.parent().prepend(label);
               }
             }
-            
+
             // Add classes to the form
-            if (this.attrs.eFormclass) {
-              this.editorEl.addClass(this.attrs.eFormclass);
+            if (attrs.eFormclass) {
+              this.editorEl.addClass(attrs.eFormclass);
               this.inputEl.removeAttr('formclass');
             }
           },
@@ -515,7 +517,7 @@ Input types: text|password|email|tel|number|url|search|color|date|datetime|datet
         render: function() {
           this.parent.render.call(this);
           this.inputEl.after('<output>' + $interpolate.startSymbol() + '$data' + $interpolate.endSymbol()  + '</output>');
-        }        
+        }
       });
   }]);
 
